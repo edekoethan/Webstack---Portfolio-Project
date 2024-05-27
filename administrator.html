@@ -1,0 +1,72 @@
+<!-- administrator.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administrator Page</title>
+  <link rel="stylesheet" type="text/css" href="./admin-style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Administrator Page</h2>
+
+    <label for="question">Question:</label>
+    <input type="text" id="question">
+
+    <div class="option">
+      <label for="optionA">Option A:</label>
+      <input type="text" id="optionA">
+      <label for="explanationA">Explanation A:</label>
+      <input type="text" id="explanationA">
+    </div>
+
+    <div class="option">
+      <label for="optionB">Option B:</label>
+      <input type="text" id="optionB">
+      <label for="explanationB">Explanation B:</label>
+      <input type="text" id="explanationB">
+    </div>
+
+    <div class="option">
+      <label for="optionC">Option C:</label>
+      <input type="text" id="optionC">
+      <label for="explanationC">Explanation C:</label>
+      <input type="text" id="explanationC">
+    </div>
+
+    <div class="option">
+      <label for="optionD">Option D:</label>
+      <input type="text" id="optionD">
+      <label for="explanationD">Explanation D:</label>
+      <input type="text" id="explanationD">
+    </div>
+
+    <button onclick="updateQuestion()">Update Question</button>
+  </div>
+
+  <script>
+    function updateQuestion() {
+      var question = document.getElementById('question').value;
+      var optionA = document.getElementById('optionA').value;
+      var explanationA = document.getElementById('explanationA').value;
+      var optionB = document.getElementById('optionB').value;
+      var explanationB = document.getElementById('explanationB').value;
+      var optionC = document.getElementById('optionC').value;
+      var explanationC = document.getElementById('explanationC').value;
+      var optionD = document.getElementById('optionD').value;
+      var explanationD = document.getElementById('explanationD').value;
+
+      localStorage.setItem('question', question);
+      localStorage.setItem('options', JSON.stringify([optionA, optionB, optionC, optionD]));
+      localStorage.setItem('explanationA', explanationA);
+      localStorage.setItem('explanationB', explanationB);
+      localStorage.setItem('explanationC', explanationC);
+      localStorage.setItem('explanationD', explanationD);
+
+      alert('Question updated successfully!');
+    }
+  </script>
+</body>
+</html>
