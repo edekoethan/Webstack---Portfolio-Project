@@ -1,88 +1,25 @@
-/* styles.css */
-
-body {
-  font-family: Arial, sans-serif;
-  font-size: 22px;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f4f4;
+.home-page {
+    text-align: center;
+    margin-top: 50px;
 }
 
-.container {
-  max-width: 540px; /* Adjust the max-width to achieve a 9:16 aspect ratio */
-  width: 100%;
-  margin: 50px auto;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
+.quiz-image {
+    max-width: 100%;
+    height: auto;
 }
 
-button {
-  font-weight: bold;
-  font-size: 18px;
-  padding: 10px;
-  margin: 5px;
-  border: none;
-  border-radius: 20%;
-  cursor: pointer;
+.start-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-top: 20px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
 }
 
-#quizSection {
-  display: flex;
-  flex-direction: row;
-}
-
-.question-option-container {
-  border-radius: 5px;
-  max-height: 80vh; /* Adjust the maximum height as needed */
-  overflow-y: auto; /* Enable vertical scrolling if needed */
-}
-
-.option-list {
-  padding-top:20px ;
-  display: flex;
-  flex-direction: row; /* Change to row for a single line */
-}
-
-.optionButton {
-  flex: 1; /* Distribute available space equally among the buttons */
-  margin: 5px;
-  background-color: #4ca5af;
-  border: none;
-  border-radius: 10px; /* Adjust the border-radius for curved edges */
-  cursor: pointer;
-  color: white;
-}
-
-.optionButton:hover {
-  background-color: #023d1b;
-}
-
-.highlight {
-  background-color: #45a1a9;
-}
-
-
-/* styles.css */
-
-.explanation-container {
-  max-width: 540px; /* Adjust the max-width to achieve a 9:16 aspect ratio */
-  margin: 0 auto;
-}
-
-.explanation-section {
-  border-radius: 5px;
-  background-color: #fff;
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-top: 20px; /* Add margin for spacing */
-  height: auto;
-  overflow: hidden;
-  transition: height 0.3s ease;
-}
-
-
-.expanded {
-  height: auto;
+.start-button:hover {
+    background-color: #45a049;
 }
