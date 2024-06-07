@@ -55,8 +55,9 @@ def view_tables():
     tables = get_table_names()
     return render_template('view_tables.html', tables=tables)
 
-@app.route('/admin/view_questions/<string:table_name>', methods=['GET'])
-def view_questions(table_name):
+@app.route('/admin/view_questions', methods=['POST'])
+def view_questions():
+    table_name = request.form['table_name']
     view_questions_sql = f"SELECT id, question, explanation FROM {table_name}"
     questions = db.session.execute(db.text(view_questions_sql)).fetchall()
     return render_template('view_questions.html', table_name=table_name, questions=questions)

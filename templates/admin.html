@@ -91,9 +91,15 @@
     </div>
 
     <div class="form-container">
-        <h2>View Tables</h2>
-        <form action="/admin/view_tables" method="post">
-            <button type="submit">View Tables</button>
+        <h2>View Questions</h2>
+        <form action="/admin/view_questions" method="post">
+            <select name="table_name" required>
+                <option value="" disabled selected>Select Table</option>
+                {% for table in tables %}
+                <option value="{{ table }}">{{ table }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">View Questions</button>
         </form>
     </div>
 </body>
