@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Page</title>
+    <title>Admin page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -49,10 +49,13 @@
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
+        .red-text {
+            color: red; /* Red color for the text */
+        }
     </style>
 </head>
 <body>
-    <h1>Admin Page</h1>
+    <h1>Welcome back <em><span class="red-text">Administrator</span></em></h1>
 
     <div class="form-container">
         <h2>Create Table</h2>
@@ -100,6 +103,12 @@
                 {% endfor %}
             </select>
             <button type="submit">View Questions</button>
+        </form>
+    </div>
+    <div class="form-container">
+        <h2>View Tables</h2>
+        <form action="/admin/view_tables" method="post">
+            <button type="submit">View Tables</button>
         </form>
     </div>
 </body>
