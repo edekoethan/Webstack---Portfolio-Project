@@ -1,23 +1,11 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Alzheimer Questions</title>
+    <title>Flashcards Home</title>
 </head>
 <body>
-    <h1>Alzheimer Questions</h1>
-    <ul>
-        {% for question in questions %}
-            <li>{{ question.question }} - {{ question.explanation }}</li>
-        {% endfor %}
-    </ul>
-    
-    <h2>Add a New Question</h2>
-    <form action="/add" method="post">
-        <label for="question">Question:</label><br>
-        <input type="text" id="question" name="question" required><br>
-        <label for="explanation">Explanation:</label><br>
-        <input type="text" id="explanation" name="explanation" required><br>
-        <input type="submit" value="Submit">
-    </form>
+    <h1>Welcome to the Flashcards Admin Page!</h1>
+    <a href="/admin">Go to Admin Page</a>
 </body>
 </html>
+

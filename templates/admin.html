@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin Page</h1>
+    <nav>
+        <ul>
+            <li><a href="#create-table">Create Table</a></li>
+            <li><a href="#add-question">Add Question</a></li>
+            <li><a href="#delete-table">Delete Table</a></li>
+            <li><a href="#view-tables">View All Tables</a></li>
+            <li><a href="#edit-questions">Edit or Delete Questions</a></li>
+        </ul>
+    </nav>
+
+    <section id="create-table">
+        <h2>Create Table</h2>
+        <form action="/admin/create_table" method="post">
+            <label for="table_name">Table Name:</label>
+            <input type="text" id="table_name" name="table_name" required>
+            <button type="submit">Create Table</button>
+        </form>
+    </section>
+
+    <section id="add-question">
+        <h2>Add Question</h2>
+        <form action="/admin/add_question" method="post">
+            <label for="add_table_name">Table Name:</label>
+            <input type="text" id="add_table_name" name="table_name" required>
+            <label for="question">Question:</label>
+            <input type="text" id="question" name="question" required>
+            <label for="explanation">Explanation:</label>
+            <input type="text" id="explanation" name="explanation" required>
+            <button type="submit">Add Question</button>
+        </form>
+    </section>
+
+    <section id="delete-table">
+        <h2>Delete Table</h2>
+        <form action="/admin/delete_table" method="post">
+            <label for="del_table_name">Table Name:</label>
+            <input type="text" id="del_table_name" name="table_name" required>
+            <button type="submit">Delete Table</button>
+        </form>
+    </section>
+
+    <section id="view-tables">
+        <h2>View All Tables</h2>
+        <form action="/admin/view_tables" method="get">
+            <button type="submit">View All Tables</button>
+        </form>
+    </section>
+
+    <section id="edit-questions">
+        <h2>Edit or Delete Questions</h2>
+        <form action="/admin/view_questions" method="post">
+            <label for="edit_table_name">Table Name:</label>
+            <input type="text" id="edit_table_name" name="table_name" required>
+            <button type="submit">View Questions</button>
+        </form>
+    </section>
+</body>
+</html>

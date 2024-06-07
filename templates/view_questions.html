@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Questions</title>
+</head>
+<body>
+    <h1>Questions in {{ table_name }}</h1>
+    <ul>
+        {% for question in questions %}
+        <li>
+            <form action="/admin/edit_question" method="post">
+                <input type="hidden" name="id" value="{{ question.id }}">
+                <input type="hidden" name="table_name" value="{{ table_name }}">
+                <label for="question_{{ question.id }}">Question:</label>
+                <input type="text" id="question_{{ question.id }}" name="question" value="{{ question.question }}">
+                <label for="explanation_{{ question.id }}">Explanation:</label>
+                <input type="text" id="explanation_{{ question.id }}" name="explanation" value="{{ question.explanation }}">
+                <button type="submit">Edit</button>
+            </form>
+            <form action="/admin/delete_question" method="post" style="display:inline;">
+                <input type="hidden" name="id" value="{{ question.id }}">
+                <input type="hidden" name="table_name" value="{{ table_name }}">
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
