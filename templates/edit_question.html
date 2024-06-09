@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Question</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .form-container form {
+            display: inline-block;
+            margin: 10px auto;
+        }
+        .form-container input[type="text"], .form-container select {
+            border-radius: 5px;
+            padding: 5px;
+            width: 200px;
+            margin: 5px 0;
+        }
+        .form-container button {
+            background-color: blue;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .alert {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Question in {{ table_name }}</h1>
+
+    <div class="form-container">
+        <form action="{{ url_for('update_question', table_name=table_name, question_id=question_id) }}" method="post">
+            <input type="text" name="question" value="{{ question.question }}" placeholder="Question" required>
+            <input type="text" name="explanation" value="{{ question.explanation }}" placeholder="Explanation" required>
+            <button type="submit">Update Question</button>
+        </form>
+    </div>
+
+    <a href="{{ url_for('view_questions', table_name=table_name) }}" class="btn">Back to Questions</a>
+</body>
+</html>

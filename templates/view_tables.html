@@ -6,10 +6,17 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            text-align: center; /* Centralize content */
+            text-align: center;
         }
         h1 {
             color: #333;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .form-container form {
+            display: inline-block;
+            margin: 10px auto;
         }
         table {
             width: 100%;
@@ -27,34 +34,37 @@
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-        .back-button {
-            background-color: blue; /* Blue buttons */
+        .btn {
+            background-color: blue;
             color: white;
-            padding: 10px 20px;
+            padding: 5px 10px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 10px;
-            display: inline-block;
+        }
+        .btn-danger {
+            background-color: red;
         }
     </style>
 </head>
 <body>
-    <h1>All Tables</h1>
+    <h1>View Tables</h1>
     <table>
-        <thead>
-            <tr>
-                <th>Table Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for table in tables %}
-            <tr>
-                <td>{{ table }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+        <tr>
+            <th>Table Name</th>
+            <th>Actions</th>
+        </tr>
+        {% for table in tables %}
+        <tr>
+            <td>{{ table }}</td>
+            <td>
+                <form action="{{ url_for('view_questions', table_name=table) }}" method="get" style="display:inline;">
+                    <button type="submit" class="btn">View Questions</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
     </table>
-    <a href="/admin" class="back-button">Back to Admin Page</a>
+    <a href="{{ url_for('admin') }}" class="btn">Back to Admin</a>
 </body>
 </html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Administrator 2 Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        h1 em {
+            color: red;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .form-container form {
+            display: inline-block;
+            margin: 10px auto;
+        }
+        .form-container input[type="text"],
+        .form-container select,
+        .form-container input[type="file"] {
+            border-radius: 5px;
+            padding: 5px;
+            width: 200px;
+            margin: 5px 0;
+        }
+        .form-container button {
+            background-color: blue;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .alert {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome back <em>Administrator 2</em></h1>
+
+    <div class="form-container">
+        <h2>Add Question</h2>
+        <form action="/administrator2/add_question" method="post" enctype="multipart/form-data">
+            <select name="table_name" required>
+                <option value="" disabled selected>Select Table</option>
+                {% for table in tables %}
+                <option value="{{ table }}">{{ table }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="question_text" placeholder="Question Text (optional)">
+            <input type="file" name="question" accept="image/*">
+            <input type="text" name="explanation_text" placeholder="Explanation Text (optional)">
+            <input type="file" name="explanation" accept="image/*">
+            <button type="submit">Add Question</button>
+        </form>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert">
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>

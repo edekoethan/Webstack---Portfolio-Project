@@ -1,47 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Questions</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .btn {
+            background-color: blue;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-danger {
+            background-color: red;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .form-container form {
+            display: inline-block;
+            margin: 10px auto;
+        }
+    </style>
 </head>
 <body>
-    <section class="section">
-        <div class="container">
-            <h1 class="title">Questions in {{ table_name }}</h1>
-            <table class="table is-fullwidth">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Question</th>
-                        <th>Explanation</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for question in questions %}
-                    <tr>
-                        <td>{{ question.id }}</td>
-                        <td>{{ question.question }}</td>
-                        <td>{{ question.explanation }}</td>
-                        <td>
-                            <form action="{{ url_for('update_question', table_name=table_name, question_id=question.id) }}" method="post" style="display:inline;">
-                                <input class="input" type="text" name="question" value="{{ question.question }}" placeholder="Question">
-                                <input class="input" type="text" name="explanation" value="{{ question.explanation }}" placeholder="Explanation">
-                                <button class="button is-primary" type="submit">Update</button>
-                            </form>
-                            <form action="{{ url_for('delete_question', table_name=table_name, question_id=question.id) }}" method="post" style="display:inline;">
-                                <button class="button is-danger" type="submit">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <a class="button is-link" href="{{ url_for('admin') }}">Back to Admin</a>
-        </div>
-    </section>
+    <h1>Questions in {{ table_name }}</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Question</th>
+            <th>Explanation</th>
+            <th>Actions</th>
+        </tr>
+        {% for question in questions %}
+        <tr>
+            <td>{{ question.id }}</td>
+            <td>{{ question.question }}</td>
+            <td>{{ question.explanation }}</td>
+            <td>
+                <form action="{{ url_for('update_question', table_name=table_name, question_id=question.id) }}" method="get" style="display:inline;">
+                    <button type="submit" class="btn">Edit</button>
+                </form>
+                <form action="{{ url_for('delete_question', table_name=table_name, question_id=question.id) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('admin') }}" class="btn">Back to Admin</a>
 </body>
 </html>
-

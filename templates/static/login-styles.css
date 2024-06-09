@@ -1,0 +1,69 @@
+/* Base styles for login container */
+.login-container {
+  width: 400px;
+  margin: 0 auto;
+  padding: 80px;
+  background-color: #f2f2f2;
+  text-align: center;
+}
+
+/* Style for the logo */
+.login-container img {
+  width: 200px;
+}
+
+/* Style for email and password input fields */
+.login-container input[type="email"],
+.login-container input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+}
+
+/* Style for the submit button */
+.login-container .submit-button {
+  background-color: rgb(176, 5, 5);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+/* Hover effect for the submit button */
+.login-container .submit-button:hover {
+  background-color: #ff0000;
+}
+
+/* Style for the "Remember Me" checkbox */
+.remember-me {
+  text-align: center;
+  padding: 10px;
+}
+
+.remember-me input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+/* Responsive styles for screens 768px and smaller */
+@media (max-width: 768px) {
+  .login-container {
+      width: 80%;
+      padding: 40px;
+  }
+}
+
+/* Responsive styles for screens 480px and smaller */
+@media (max-width: 480px) {
+  .login-container {
+      width: 90%;
+      padding: 20px;
+  }
+
+  .login-container img {
+      width: 100px;
+  }
+}
