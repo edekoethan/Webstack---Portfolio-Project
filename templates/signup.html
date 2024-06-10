@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Form</title>
+    <link rel="stylesheet" type="text/css" href="./static/sign_up.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        /* Include your sign_up.css content here */
+        body {
+            font-family: Arial, sans-serif;
+            background: #f6f5f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+            position: relative;
+            width: 500px;
+            max-width: 100%;
+            min-height: 480px;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+        .box {
+            margin-bottom: 20px;
+        }
+        .fontLabel {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .textBox {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .submit {
+            background-color: #ff4b2b;
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .submit:hover {
+            background-color: #ff416c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form method="post" action="/signup" autocomplete="on">
+            <div class="box">
+                <label for="firstName" class="fontLabel"> First Name: </label>
+                <input type="text" name="firstName" placeholder="First Name" class="textBox" autofocus="on" required>
+            </div>
+            <div class="box">
+                <label for="secondName" class="fontLabel"> Second Name: </label>
+                <input type="text" name="secondName" placeholder="Last Name" class="textBox" required>
+            </div>
+            <div class="box">
+                <label for="phoneNo" class="fontLabel"> Phone No.: </label>
+                <input type="text" name="phoneNo" maxlength="10" placeholder="Phone No." class="textBox" required>
+            </div>
+            <div class="box">
+                <label for="email" class="fontLabel"> Email ID: </label>
+                <input type="email" name="email" placeholder="Email Id" class="textBox" required>
+            </div>
+            <div class="box">
+                <label for="password" class="fontLabel"> Password: </label>
+                <input type="Password" name="password" placeholder="Password" class="textBox" required>
+            </div>
+            <div class="box terms">
+                <input type="checkbox" name="Terms" required> &nbsp; I accept the terms and conditions
+            </div>
+            <div class="box" style="background: #2d3e3f">
+                <input type="Submit" name="Submit" class="submit" value="SUBMIT">
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,14 +1,20 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.utils import secure_filename
-import os
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flashcards.db'
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
-app.config['MAX_CONTENT_PATH'] = 1 * 1024 * 1024  # 1 MB max file size
-app.secret_key = 'your_secret_key'
+app.config['SECRET_KEY'] = 'your_secret_key'
 db = SQLAlchemy(app)
+
+# User model
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(150), nullable=False)
+    second_name = db.Column(db.String(150), nullable=False)
+    phone_no = db.Column(db.String(10), nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
 
 # Function to get all table names
 def get_table_names():
@@ -66,21 +72,16 @@ def view_questions(table_name):
     questions = db.session.execute(db.text(view_questions_sql)).fetchall()
     return render_template('view_questions.html', table_name=table_name, questions=questions)
 
-@app.route('/admin/update_question/<string:table_name>/<int:question_id>', methods=['GET', 'POST'])
+@app.route('/admin/update_question/<string:table_name>/<int:question_id>', methods=['POST'])
 def update_question(table_name, question_id):
-    if request.method == 'POST':
-        question = request.form['question']
-        explanation = request.form['explanation']
-        update_question_sql = f"""
-        UPDATE {table_name} SET question = :question, explanation = :explanation WHERE id = :id
-        """
-        db.session.execute(db.text(update_question_sql), {'question': question, 'explanation': explanation, 'id': question_id})
-        db.session.commit()
-        return redirect(url_for('view_questions', table_name=table_name))
-    else:
-        get_question_sql = f"SELECT question, explanation FROM {table_name} WHERE id = :id"
-        question = db.session.execute(db.text(get_question_sql), {'id': question_id}).fetchone()
-        return render_template('edit_question.html', table_name=table_name, question=question, question_id=question_id)
+    question = request.form['question']
+    explanation = request.form['explanation']
+    update_question_sql = f"""
+    UPDATE {table_name} SET question = :question, explanation = :explanation WHERE id = :id
+    """
+    db.session.execute(db.text(update_question_sql), {'question': question, 'explanation': explanation, 'id': question_id})
+    db.session.commit()
+    return redirect(url_for('view_questions', table_name=table_name))
 
 @app.route('/admin/delete_question/<string:table_name>/<int:question_id>', methods=['POST'])
 def delete_question(table_name, question_id):
@@ -88,7 +89,6 @@ def delete_question(table_name, question_id):
     db.session.execute(db.text(delete_question_sql), {'id': question_id})
     db.session.commit()
     return redirect(url_for('view_questions', table_name=table_name))
-
 @app.route('/administrator2')
 def administrator2():
     tables = get_table_names()
@@ -134,5 +134,40 @@ def add_question_admin2():
     db.session.commit()
     return redirect(url_for('administrator2'))
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        user = User.query.filter_by(email=email).first()
+        if user and check_password_hash(user.password, password):
+            session['user_id'] = user.id
+            return redirect(url_for('index'))
+        else:
+            flash('Login Unsuccessful. Please check your email and password', 'danger')
+    return render_template('login.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        first_name = request.form['firstName']
+        second_name = request.form['secondName']
+        phone_no = request.form['phoneNo']
+        email = request.form['email']
+        password = request.form['password']
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+        new_user = User(first_name=first_name, second_name=second_name, phone_no=phone_no, email=email, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Account created successfully!', 'success')
+        return redirect(url_for('login'))
+    return render_template('signup.html')
+
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
