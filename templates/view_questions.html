@@ -45,7 +45,56 @@
             display: inline-block;
             margin: 10px auto;
         }
+        .editable {
+            display: inline;
+        }
+        .editable input {
+            width: 100%;
+        }
     </style>
+    <script>
+        function makeEditable(rowId) {
+            var row = document.getElementById('row-' + rowId);
+            var cells = row.getElementsByTagName('td');
+
+            for (var i = 1; i < 3; i++) { // Start from 1 to skip the ID cell
+                var cell = cells[i];
+                var text = cell.innerText;
+                cell.innerHTML = '<input type="text" value="' + text + '" />';
+            }
+
+            var editButton = document.getElementById('edit-' + rowId);
+            editButton.innerText = 'Save';
+            editButton.onclick = function() { saveChanges(rowId); };
+        }
+
+        function saveChanges(rowId) {
+            var row = document.getElementById('row-' + rowId);
+            var cells = row.getElementsByTagName('td');
+
+            var question = cells[1].getElementsByTagName('input')[0].value;
+            var explanation = cells[2].getElementsByTagName('input')[0].value;
+
+            var formData = new FormData();
+            formData.append('question', question);
+            formData.append('explanation', explanation);
+
+            fetch('/admin/update_question/' + row.dataset.tableName + '/' + rowId, {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    cells[1].innerText = question;
+                    cells[2].innerText = explanation;
+                    var editButton = document.getElementById('edit-' + rowId);
+                    editButton.innerText = 'Edit';
+                    editButton.onclick = function() { makeEditable(rowId); };
+                } else {
+                    alert('Failed to save changes.');
+                }
+            });
+        }
+    </script>
 </head>
 <body>
     <h1>Questions in {{ table_name }}</h1>
@@ -57,14 +106,12 @@
             <th>Actions</th>
         </tr>
         {% for question in questions %}
-        <tr>
+        <tr id="row-{{ question.id }}" data-table-name="{{ table_name }}">
             <td>{{ question.id }}</td>
             <td>{{ question.question }}</td>
             <td>{{ question.explanation }}</td>
             <td>
-                <form action="{{ url_for('update_question', table_name=table_name, question_id=question.id) }}" method="get" style="display:inline;">
-                    <button type="submit" class="btn">Edit</button>
-                </form>
+                <button class="btn" id="edit-{{ question.id }}" onclick="makeEditable({{ question.id }})">Edit</button>
                 <form action="{{ url_for('delete_question', table_name=table_name, question_id=question.id) }}" method="post" style="display:inline;">
                     <button type="submit" class="btn btn-danger">Delete</button>
                 </form>

@@ -83,6 +83,7 @@ def update_question(table_name, question_id):
     db.session.commit()
     return redirect(url_for('view_questions', table_name=table_name))
 
+
 @app.route('/admin/delete_question/<string:table_name>/<int:question_id>', methods=['POST'])
 def delete_question(table_name, question_id):
     delete_question_sql = f"DELETE FROM {table_name} WHERE id = :id"
