@@ -168,6 +168,29 @@ def signup():
         return redirect(url_for('login'))
     return render_template('signup.html')
 
+@app.route('/dashboard')
+def dashboard():
+# Total Decks
+    total_decks = len(get_table_names())
+
+    # Total Flashcards
+    total_flashcards = 0
+    for table_name in get_table_names():
+        view_flashcards_sql = f"SELECT COUNT(*) FROM {table_name}"
+        flashcards_count = db.session.execute(db.text(view_flashcards_sql)).fetchone()[0]
+        total_flashcards += flashcards_count
+
+    # Recent Activity (Mock data for demonstration)
+    recent_activity = "Studied Math deck"  # Assuming "Math" is the most recent deck
+
+    return render_template('dashboard.html', total_decks=total_decks, total_flashcards=total_flashcards, recent_activity=recent_activity)
+
+@app.route('/view_flashcards/<string:table_name>')
+def view_flashcards(table_name):
+    view_flashcards_sql = f"SELECT id, question, explanation FROM {table_name}"
+    flashcards = db.session.execute(db.text(view_flashcards_sql)).fetchall()
+    return render_template('view_flashcards.html', table_name=table_name, flashcards=flashcards)
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

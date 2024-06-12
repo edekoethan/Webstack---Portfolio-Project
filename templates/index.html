@@ -3,9 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index Page</title>
+    <title>Flashcards Dashboard</title>
+    <style>
+        /* CSS styles remain the same */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+        }
+
+        header h1 {
+            text-align: center;
+            margin: 0;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        main {
+            margin: 20px 0;
+        }
+
+        #summary {
+            text-align: center;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            flex: 1;
+            margin: 10px;
+        }
+
+        #decks ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #decks li {
+            background: #fff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background: #333;
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Index Page</h1>
+    <div class="container">
+        <header>
+            <h1>Flashcards Dashboard</h1>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#decks">My Decks</a></li>
+                    <li><a href="#profile">Profile</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <section id="summary">
+                <h2>Summary</h2>
+                <div class="cards">
+                    <div class="card">
+                        <h3>Total Decks</h3>
+                        <p id="total-decks">{{ total_decks }}</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Flashcards</h3>
+                        <p id="total-cards">{{ total_flashcards }}</p>
+                    </div>
+                    <div class="card">
+                        <h3>Recent Activity</h3>
+                        <p id="recent-activity">{{ recent_activity }}</p>
+                    </div>
+                </div>
+            </section>
+            <section id="decks">
+                <h2>My Decks</h2>
+                <ul id="deck-list">
+                    {% for table in tables %}
+                    <li><a href="{{ url_for('view_flashcards', table_name=table[0]) }}">{{ table[0] }}</a></li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </main>
+        <footer>
+            <p>&copy; 2024 Flashcards App</p>
+        </footer>
+    </div>
 </body>
 </html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Flashcards</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+main {
+    padding: 20px;
+}
+
+.flashcards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.flashcard {
+    width: 200px;
+    height: 300px;
+    perspective: 1000px;
+    margin: 20px;
+    position: relative;
+}
+
+.flashcard .front,
+.flashcard .back {
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    backface-visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.flashcard .back {
+    transform: rotateY(180deg);
+}
+
+.flashcard:hover .front {
+    transform: rotateY(180deg);
+}
+
+.flashcard:hover .back {
+    transform: rotateY(360deg);
+}
+
+.favorite-button {
+    background-color: #ff4b2b;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.favorite-button:hover {
+    background-color: #d4351c;
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>{{ table_name }} Flashcards</h1>
+        <nav>
+            <ul>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/favorites">Favorites</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="flashcards-container">
+            {% for question in questions %}
+            <div class="flashcard">
+                <div class="front">
+                    <p>{{ question.question }}</p>
+                </div>
+                <div class="back">
+                    <p>{{ question.explanation }}</p>
+                </div>
+                <button class="favorite-button" onclick="addToFavorites('{{ table_name }}', {{ question.id }})">Add to Favorites</button>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+    <script>
+        function addToFavorites(table, id) {
+            fetch(`/add_to_favorites/${table}/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Flashcard added to favorites!');
+                } else {
+                    alert('Error adding flashcard to favorites.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
