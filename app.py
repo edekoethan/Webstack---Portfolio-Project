@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
+import random
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flashcards.db'
@@ -16,12 +18,43 @@ class User(db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
 
-# Function to get all table names
+# Function to get all table names except for 'user' table
 def get_table_names():
     with db.engine.connect() as conn:
-        tables = conn.execute(db.text("SELECT name FROM sqlite_master WHERE type='table'")).fetchall()
+        tables = conn.execute(db.text("SELECT name FROM sqlite_master WHERE type='table' AND name != 'user'")).fetchall()
     return [table[0] for table in tables]
 
+# Function to get total number of flashcards
+def get_total_flashcards():
+    total_flashcards = 0
+    tables = get_table_names()
+    with db.engine.connect() as conn:
+        for table in tables:
+            count = conn.execute(db.text(f"SELECT COUNT(*) FROM {table}")).scalar()
+            total_flashcards += count
+    return total_flashcards
+
+@app.route('/dashboard')
+def dashboard():
+    tables = get_table_names()
+    total_decks = len(tables)
+    total_flashcards = get_total_flashcards()
+    recent_activity = session.get('recent_activity', 'None')
+
+    # Assign random colors to each deck
+    deck_colors = {table: "#{:06x}".format(random.randint(0x000000, 0xFFFFFF)) for table in tables}
+    # Exclude black color
+    deck_colors = {table: color if color != "#000000" else "#{:06x}".format(random.randint(0x000001, 0xFFFFFF)) for table, color in deck_colors.items()}
+
+    return render_template('dashboard.html', tables=tables, total_decks=total_decks, total_flashcards=total_flashcards, recent_activity=recent_activity, deck_colors=deck_colors)
+
+
+@app.route('/view_flashcards/<string:table_name>')
+def view_flashcards(table_name):
+    session['recent_activity'] = table_name
+    view_questions_sql = f"SELECT id, question, explanation FROM {table_name}"
+    questions = db.session.execute(db.text(view_questions_sql)).fetchall()
+    return render_template('view_flashcards.html', table_name=table_name, questions=questions)
 @app.route('/admin')
 def admin():
     tables = get_table_names()
@@ -137,7 +170,7 @@ def add_question_admin2():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('dashboard.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -147,7 +180,7 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password, password):
             session['user_id'] = user.id
-            return redirect(url_for('index'))
+            return redirect(url_for('dashboard'))
         else:
             flash('Login Unsuccessful. Please check your email and password', 'danger')
     return render_template('login.html')
@@ -166,30 +199,8 @@ def signup():
         db.session.commit()
         flash('Account created successfully!', 'success')
         return redirect(url_for('login'))
+
     return render_template('signup.html')
-
-@app.route('/dashboard')
-def dashboard():
-# Total Decks
-    total_decks = len(get_table_names())
-
-    # Total Flashcards
-    total_flashcards = 0
-    for table_name in get_table_names():
-        view_flashcards_sql = f"SELECT COUNT(*) FROM {table_name}"
-        flashcards_count = db.session.execute(db.text(view_flashcards_sql)).fetchone()[0]
-        total_flashcards += flashcards_count
-
-    # Recent Activity (Mock data for demonstration)
-    recent_activity = "Studied Math deck"  # Assuming "Math" is the most recent deck
-
-    return render_template('dashboard.html', total_decks=total_decks, total_flashcards=total_flashcards, recent_activity=recent_activity)
-
-@app.route('/view_flashcards/<string:table_name>')
-def view_flashcards(table_name):
-    view_flashcards_sql = f"SELECT id, question, explanation FROM {table_name}"
-    flashcards = db.session.execute(db.text(view_flashcards_sql)).fetchall()
-    return render_template('view_flashcards.html', table_name=table_name, flashcards=flashcards)
 
 if __name__ == '__main__':
     with app.app_context():
