@@ -1,3 +1,4 @@
+<!-- view_flashcards.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -121,7 +122,7 @@
         <nav>
             <ul>
                 <li><a href="/dashboard">Dashboard</a></li>
-                <li><a href="/favorites">Favorites</a></li>
+                <li><a href="/view_favorites">Favorites</a></li>
                 <li><a href="/logout">Logout</a></li>
             </ul>
         </nav>
@@ -155,7 +156,7 @@
                 if (data.success) {
                     alert('Flashcard added to favorites!');
                 } else {
-                    alert('Error adding flashcard to favorites.');
+                    alert('Error adding flashcard to favorites: ' + data.message);
                 }
             })
             .catch(error => console.error('Error:', error));

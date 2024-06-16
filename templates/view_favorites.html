@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Flashcards</title>
+</head>
+<body>
+    <h1>Flashcards for {{ table_name }}</h1>
+    {% for question in questions %}
+        <div>
+            <h3>{{ question.question }}</h3>
+            <p>{{ question.explanation }}</p>
+            <form action="{{ url_for('add_to_favorites', table_name=table_name, question_id=question.id) }}" method="post">
+                <button type="submit">Add to Favorites</button>
+            </form>
+        </div>
+    {% endfor %}
+</body>
+</html>
