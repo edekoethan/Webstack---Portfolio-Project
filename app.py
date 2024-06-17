@@ -18,6 +18,14 @@ class User(db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
 
+# favorite model
+class Favorite(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    flashcard_id = db.Column(db.Integer, nullable=False)
+    table_name = db.Column(db.String(150), nullable=False)
+
+
 # Function to get all table names except for 'user' table
 def get_table_names():
     with db.engine.connect() as conn:
@@ -55,6 +63,7 @@ def view_flashcards(table_name):
     view_questions_sql = f"SELECT id, question, explanation FROM {table_name}"
     questions = db.session.execute(db.text(view_questions_sql)).fetchall()
     return render_template('view_flashcards.html', table_name=table_name, questions=questions)
+
 @app.route('/admin')
 def admin():
     tables = get_table_names()
@@ -201,6 +210,50 @@ def signup():
         return redirect(url_for('login'))
 
     return render_template('signup.html')
+
+@app.route('/add_to_favorites/<string:table_name>/<int:question_id>', methods=['POST'])
+def add_to_favorites(table_name, question_id):
+    if 'user_id' not in session:
+        return {'success': False, 'message': 'You must be logged in to add to favorites.'}
+    
+    user_id = session['user_id']
+    
+    # Check if the flashcard is already in favorites
+    existing_favorite = Favorite.query.filter_by(user_id=user_id, flashcard_id=question_id, table_name=table_name).first()
+    if existing_favorite:
+        return {'success': False, 'message': 'Flashcard is already in favorites.'}
+
+    new_favorite = Favorite(user_id=user_id, flashcard_id=question_id, table_name=table_name)
+    db.session.add(new_favorite)
+    db.session.commit()
+    
+    return {'success': True}
+
+
+@app.route('/view_favorites')
+def view_favorites():
+    if 'user_id' not in session:
+        flash('You must be logged in to view favorites.', 'danger')
+        return redirect(url_for('login'))
+    
+    user_id = session['user_id']
+    favorites = Favorite.query.filter_by(user_id=user_id).all()
+    
+    favorite_flashcards = []
+    with db.engine.connect() as conn:
+        for favorite in favorites:
+            query = f"SELECT id, question, explanation FROM {favorite.table_name} WHERE id = :flashcard_id"
+            flashcard = conn.execute(db.text(query), {'flashcard_id': favorite.flashcard_id}).fetchone()
+            if flashcard:
+                favorite_flashcards.append({
+                    'table_name': favorite.table_name,
+                    'id': flashcard['id'],
+                    'question': flashcard['question'],
+                    'explanation': flashcard['explanation']
+                })
+    
+    return render_template('view_favorites.html', favorite_flashcards=favorite_flashcards)
+
 
 if __name__ == '__main__':
     with app.app_context():

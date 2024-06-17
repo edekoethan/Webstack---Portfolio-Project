@@ -1,20 +1,37 @@
+<!-- view_favorites.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Flashcards</title>
+    <title>View Favorites</title>
+    <style>
+        /* Add your existing styles here */
+    </style>
 </head>
 <body>
-    <h1>Flashcards for {{ table_name }}</h1>
-    {% for question in questions %}
-        <div>
-            <h3>{{ question.question }}</h3>
-            <p>{{ question.explanation }}</p>
-            <form action="{{ url_for('add_to_favorites', table_name=table_name, question_id=question.id) }}" method="post">
-                <button type="submit">Add to Favorites</button>
-            </form>
+    <header>
+        <h1>My Favorite Flashcards</h1>
+        <nav>
+            <ul>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="flashcards-container">
+            {% for flashcard in favorite_flashcards %}
+            <div class="flashcard" onclick="this.classList.toggle('flip')">
+                <div class="front">
+                    <p>{{ flashcard.question }}</p>
+                </div>
+                <div class="back">
+                    <p>{{ flashcard.explanation }}</p>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+    </main>
 </body>
 </html>
