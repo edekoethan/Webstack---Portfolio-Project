@@ -4,42 +4,106 @@
     <title>Support Us</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
             margin: 0;
             padding: 20px;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         h1 {
-            color: #333;
+            color: #007bff;
+            margin-bottom: 20px;
         }
 
-        p {
-            color: #666;
+        p, ul, ol {
+            color: #555;
+            line-height: 1.6;
+            max-width: 600px;
+            text-align: center;
         }
 
-        .donate-button {
+        ul, ol {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li, ol li {
+            margin-bottom: 10px;
+        }
+
+        ol li a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        ol li a:hover {
+            text-decoration: underline;
+        }
+
+        .chat-button {
             display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
+            padding: 15px 30px;
+            background-color: #28a745;
             color: #fff;
             text-decoration: none;
-            border-radius: 4px;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .chat-button:hover {
+            background-color: #218838;
+        }
+
+        .donation-methods {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background: #333;
+            color: #fff;
         }
     </style>
 </head>
 <body>
     <h1>Support Us</h1>
-    <p>Thank you for considering supporting our cause. Your contribution helps us continue our work.</p>
-    <p>Donations of any amount are accepted and easy to make.</p>
-    <p>You can send your donatiions via one of the following platforms.</p>
-    <li>
+    <p>Thank you for considering supporting our cause. Your contribution helps us continue our work. Donations of any amount are accepted and easy to make.</p>
+    <p>If you donate, you will receive special privileges including:</p>
+    <ul>
+        <li>Displaying your ads on flashcards</li>
+        <li>Access to premium flashcards</li>
+        <li>Access to StudixShare Community</li>
+        <li>Further explanations on any card(s) of your choosing</li>
+        <li>Voting on topics you want flashcards for</li>
+    </ul>
+
+    <div class="donation-methods">
+        <p>You can send your donations via one of the following platforms:</p>
         <ol>
-            <li> <a href="https://www.paypal.com">PayPal</a>: Send donations with PayPal using our official email address studixshare@gmail.com </li>
-           
-            <li>Bank Transfer</li>
+            <li><a href="https://www.paypal.com">PayPal</a>: Send donations with PayPal using our official email address studixshare@gmail.com</li>
+            <li>Bank Transfer: Please contact us for bank details.</li>
         </ol>
-    </li>
-    <p>If you would like to contact us as regards other methods of donation, please click the button below:</p>
-    <a href="https://example.com/donate" class="donate-button">Donate</a>
+    </div>
+
+    <p>To Join the StudixShare Community, or if you would like to contact us regarding other methods of donation, please click the button below to start a chat with our customer care representative:</p>
+    <a class="chat-button" href="https://chatwith.io/s/23408106583743">Chat</a>
+    
+    <div class="footer"></div>
+        <p> @2024 StudixShare <sup>TM</sup></p>
+    </div>
+    
 </body>
 </html>
