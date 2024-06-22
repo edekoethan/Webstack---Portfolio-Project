@@ -12,8 +12,10 @@
                 var flashcardId = button.data('flashcard-id');
                 var tableName = button.data('table-name');
 
+                var url = `/remove_from_favorites/${tableName}/${flashcardId}`;
+
                 $.ajax({
-                    url: "{{ url_for('remove_from_favorites', table_name='') }}" + tableName + "/" + flashcardId,
+                    url: url,
                     method: 'POST',
                     success: function(response) {
                         if (response.success) {
@@ -41,4 +43,5 @@
     </ul>
 </body>
 </html>
+
 

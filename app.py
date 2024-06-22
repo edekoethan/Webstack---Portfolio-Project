@@ -307,25 +307,19 @@ def view_favorites():
 
     return render_template('view_favorites.html', favorite_flashcards=favorites)
 
+@app.route('/remove_from_favorites/<string:table_name>/<int:flashcard_id>', methods=['POST'])
+def remove_from_favorites(table_name, flashcard_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify(success=False, message='You must be logged in to perform this action.')
 
-@app.route('/remove_from_favorites/<string:table_name>/<int:question_id>', methods=['POST'])
-def remove_from_favorites(table_name, question_id):
-    if 'user_id' not in session:
-        return jsonify({'success': False, 'message': 'You must be logged in to remove from favorites.'})
+    favorite = Favorite.query.filter_by(user_id=user_id, table_name=table_name, flashcard_id=flashcard_id).first()
+    if favorite:
+        db.session.delete(favorite)
+        db.session.commit()
+        return jsonify(success=True)
+    return jsonify(success=False, message='Favorite not found.')
 
-    user_id = session['user_id']
-
-    try:
-        favorite = Favorite.query.filter_by(user_id=user_id, flashcard_id=question_id, table_name=table_name).first()
-        if favorite:
-            db.session.delete(favorite)
-            db.session.commit()
-            return jsonify({'success': True})
-        else:
-            return jsonify({'success': False, 'message': 'Flashcard not found in favorites.'})
-    except Exception as e:
-        print(e)  # Log the error message
-        return jsonify({'success': False, 'message': 'An error occurred while removing from favorites.'})
 
 if __name__ == '__main__':
     with app.app_context():
