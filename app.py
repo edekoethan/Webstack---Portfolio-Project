@@ -34,7 +34,7 @@ class Favorite(db.Model):
 # Function to get all table names except for 'user' table
 def get_table_names():
     with db.engine.connect() as conn:
-        tables = conn.execute(db.text("SELECT name FROM sqlite_master WHERE type='table' AND name NOT IN ('user', 'sqlite_sequence', 'flashcard')")).fetchall()
+        tables = conn.execute(db.text("SELECT name FROM sqlite_master WHERE type='table' AND name NOT IN ('user', 'sqlite_sequence', 'user_favorite_flashcard', 'favorite', 'flashcard')")).fetchall()
     return [table[0] for table in tables]
 
 # Function to get total number of flashcards
