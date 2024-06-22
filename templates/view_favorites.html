@@ -1,37 +1,44 @@
-<!-- view_favorites.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Favorites</title>
-    <style>
-        /* Add your existing styles here */
-    </style>
+    <title>Favorites</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.remove-favorite').on('click', function(event) {
+                event.preventDefault();
+                var button = $(this);
+                var flashcardId = button.data('flashcard-id');
+                var tableName = button.data('table-name');
+
+                $.ajax({
+                    url: "{{ url_for('remove_from_favorites', table_name='') }}" + tableName + "/" + flashcardId,
+                    method: 'POST',
+                    success: function(response) {
+                        if (response.success) {
+                            button.closest('li').remove();
+                        } else {
+                            alert(response.message);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
-    <header>
-        <h1>My Favorite Flashcards</h1>
-        <nav>
-            <ul>
-                <li><a href="/dashboard">Dashboard</a></li>
-                <li><a href="/logout">Logout</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <div class="flashcards-container">
-            {% for flashcard in favorite_flashcards %}
-            <div class="flashcard" onclick="this.classList.toggle('flip')">
-                <div class="front">
-                    <p>{{ flashcard.question }}</p>
-                </div>
-                <div class="back">
-                    <p>{{ flashcard.explanation }}</p>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </main>
+    <h1>Your Favorite Flashcards</h1>
+    <ul>
+        {% for flashcard in favorite_flashcards %}
+            <li>
+                <strong>Table:</strong> {{ flashcard.table_name }}<br>
+                <strong>Question:</strong> {{ flashcard.question }}<br>
+                <strong>Explanation:</strong> {{ flashcard.explanation }}<br>
+                <button class="remove-favorite" data-flashcard-id="{{ flashcard.flashcard_id }}" data-table-name="{{ flashcard.table_name }}">Remove from Favorites</button>
+            </li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
+

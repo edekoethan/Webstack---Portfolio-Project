@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import os
 import random
 
@@ -24,12 +25,16 @@ class Favorite(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     flashcard_id = db.Column(db.Integer, nullable=False)
     table_name = db.Column(db.String(150), nullable=False)
+    question = db.Column(db.Text, nullable=False)
+    explanation = db.Column(db.Text, nullable=False)
+
+    user = db.relationship('User', backref=db.backref('favorites', lazy=True))
 
 
 # Function to get all table names except for 'user' table
 def get_table_names():
     with db.engine.connect() as conn:
-        tables = conn.execute(db.text("SELECT name FROM sqlite_master WHERE type='table' AND name NOT IN ('user', 'sqlite_sequence', 'user_favorite_flashcard', 'flashcard')")).fetchall()
+        tables = conn.execute(db.text("SELECT name FROM sqlite_master WHERE type='table' AND name NOT IN ('user', 'sqlite_sequence', 'flashcard')")).fetchall()
     return [table[0] for table in tables]
 
 # Function to get total number of flashcards
@@ -56,13 +61,42 @@ def dashboard():
 
     return render_template('dashboard.html', tables=tables, total_decks=total_decks, total_flashcards=total_flashcards, recent_activity=recent_activity, deck_colors=deck_colors)
 
+@app.route('/support')
+def support():
+    return render_template('support.html')
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        message = request.form.get('message')
+        # Process the contact form submission as needed
+        flash('Thank you for your message!', 'success')
+        return redirect(url_for('dashboard'))
+    return render_template('contact.html')
+
+@app.route('/submit', methods=['POST'])
+def submit_contact():
+    name = request.form.get('name')
+    email = request.form.get('email')
+    message = request.form.get('message')
+    # Process the contact form submission as needed
+    return redirect(url_for('dashboard'))
 
 @app.route('/view_flashcards/<string:table_name>')
 def view_flashcards(table_name):
     session['recent_activity'] = table_name
     view_questions_sql = f"SELECT id, question, explanation FROM {table_name}"
     questions = db.session.execute(db.text(view_questions_sql)).fetchall()
-    return render_template('view_flashcards.html', table_name=table_name, questions=questions)
+
+    user_favorite_flashcard_ids = []
+    if 'user_id' in session:
+        user_id = session['user_id']
+        favorites = Favorite.query.filter_by(user_id=user_id, table_name=table_name).all()
+        user_favorite_flashcard_ids = [favorite.flashcard_id for favorite in favorites]
+
+    return render_template('view_flashcards.html', table_name=table_name, questions=questions, user_favorite_flashcard_ids=user_favorite_flashcard_ids)
 
 @app.route('/admin')
 def admin():
@@ -132,6 +166,7 @@ def delete_question(table_name, question_id):
     db.session.execute(db.text(delete_question_sql), {'id': question_id})
     db.session.commit()
     return redirect(url_for('view_questions', table_name=table_name))
+
 @app.route('/administrator2')
 def administrator2():
     tables = get_table_names()
@@ -194,6 +229,12 @@ def login():
             flash('Login Unsuccessful. Please check your email and password', 'danger')
     return render_template('login.html')
 
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    # Clear the session
+    session.clear()
+    return redirect(url_for('login'))
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -211,51 +252,86 @@ def signup():
 
     return render_template('signup.html')
 
+
 @app.route('/add_to_favorites/<string:table_name>/<int:question_id>', methods=['POST'])
 def add_to_favorites(table_name, question_id):
     if 'user_id' not in session:
-        return {'success': False, 'message': 'You must be logged in to add to favorites.'}
-    
+        flash('You must be logged in to add to favorites.', 'danger')
+        return redirect(url_for('login'))
+
     user_id = session['user_id']
+
+    # Fetch the question and explanation from the specified table
+    query = f"SELECT question, explanation FROM {table_name} WHERE id = :flashcard_id"
+    flashcard = db.session.execute(db.text(query), {'flashcard_id': question_id}).fetchone()
     
+    if not flashcard:
+        flash('Flashcard not found.', 'danger')
+        return redirect(url_for('view_flashcards', table_name=table_name))
+    
+    question, explanation = flashcard  # Unpacking the tuple
+
     # Check if the flashcard is already in favorites
     existing_favorite = Favorite.query.filter_by(user_id=user_id, flashcard_id=question_id, table_name=table_name).first()
     if existing_favorite:
-        return {'success': False, 'message': 'Flashcard is already in favorites.'}
+        flash('Flashcard is already in favorites.', 'info')
+        return redirect(url_for('view_flashcards', table_name=table_name))
 
-    new_favorite = Favorite(user_id=user_id, flashcard_id=question_id, table_name=table_name)
+    new_favorite = Favorite(user_id=user_id, flashcard_id=question_id, table_name=table_name, question=question, explanation=explanation)
     db.session.add(new_favorite)
     db.session.commit()
-    
-    return {'success': True}
 
+    flash('Flashcard added to favorites.', 'success')
+    return redirect(url_for('view_flashcards', table_name=table_name))
+
+
+def alter_favorite_table():
+    with db.engine.connect() as conn:
+        result = conn.execute(db.text("PRAGMA table_info(favorite);")).fetchall()
+        columns = [column[1] for column in result]
+        
+        if 'question' not in columns:
+            conn.execute(db.text("ALTER TABLE favorite ADD COLUMN question TEXT;"))
+        
+        if 'explanation' not in columns:
+            conn.execute(db.text("ALTER TABLE favorite ADD COLUMN explanation TEXT;"))
 
 @app.route('/view_favorites')
 def view_favorites():
     if 'user_id' not in session:
         flash('You must be logged in to view favorites.', 'danger')
         return redirect(url_for('login'))
-    
+
     user_id = session['user_id']
     favorites = Favorite.query.filter_by(user_id=user_id).all()
-    
-    favorite_flashcards = []
-    with db.engine.connect() as conn:
-        for favorite in favorites:
-            query = f"SELECT id, question, explanation FROM {favorite.table_name} WHERE id = :flashcard_id"
-            flashcard = conn.execute(db.text(query), {'flashcard_id': favorite.flashcard_id}).fetchone()
-            if flashcard:
-                favorite_flashcards.append({
-                    'table_name': favorite.table_name,
-                    'id': flashcard['id'],
-                    'question': flashcard['question'],
-                    'explanation': flashcard['explanation']
-                })
-    
-    return render_template('view_favorites.html', favorite_flashcards=favorite_flashcards)
 
+    return render_template('view_favorites.html', favorite_flashcards=favorites)
+
+
+@app.route('/remove_from_favorites/<string:table_name>/<int:question_id>', methods=['POST'])
+def remove_from_favorites(table_name, question_id):
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'You must be logged in to remove from favorites.'})
+
+    user_id = session['user_id']
+
+    try:
+        favorite = Favorite.query.filter_by(user_id=user_id, flashcard_id=question_id, table_name=table_name).first()
+        if favorite:
+            db.session.delete(favorite)
+            db.session.commit()
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'message': 'Flashcard not found in favorites.'})
+    except Exception as e:
+        print(e)  # Log the error message
+        return jsonify({'success': False, 'message': 'An error occurred while removing from favorites.'})
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        try:
+            alter_favorite_table()
+        except Exception as e:
+            print(f"Error altering table: {e}")
     app.run(debug=True)
