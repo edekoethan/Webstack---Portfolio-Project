@@ -4,21 +4,35 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 import random
+from flask_mail import Mail, Message  # Make sure this line is uncommented
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flashcards.db'
 app.config['SECRET_KEY'] = 'your_secret_key'
 db = SQLAlchemy(app)
 
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'studixshare@gmail.com'
+app.config['MAIL_PASSWORD'] = '00781227.sTUDIXSHARE'
+
+mail = Mail(app)  # Initialize the mail instance
+
 # User model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(150), nullable=False)
-    second_name = db.Column(db.String(150), nullable=False)
-    phone_no = db.Column(db.String(10), nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(150), nullable=False)
+    first_name = db.Column(db.String(50), nullable=False)
+    second_name = db.Column(db.String(50), nullable=False)
+    phone_no = db.Column(db.String(20), nullable=False)
+    email = db.Column(db.String(120), unique = True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
 
+    def __repr__(self):
+        return f'<User {self.email}>'
+    
+    
 # favorite model
 class Favorite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -247,10 +261,17 @@ def signup():
         new_user = User(first_name=first_name, second_name=second_name, phone_no=phone_no, email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-        flash('Account created successfully!', 'success')
+
+        # Send welcome email
+        msg = Message('Welcome to Flashcards!', sender='noreply@example.com', recipients=[email])
+        msg.body = f'Hi {first_name},\n\nThank you for signing up!'
+        mail.send(msg)
+
+        flash('Account created successfully! Please check your email for a welcome message.', 'success')
         return redirect(url_for('login'))
 
     return render_template('signup.html')
+
 
 
 @app.route('/add_to_favorites/<string:table_name>/<int:question_id>', methods=['POST'])
@@ -319,6 +340,32 @@ def remove_from_favorites(table_name, flashcard_id):
         db.session.commit()
         return jsonify(success=True)
     return jsonify(success=False, message='Favorite not found.')
+
+
+#resetpassword
+@app.route('/reset-password', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        new_password = request.form['newPassword']
+        confirm_password = request.form['confirmPassword']
+
+        if new_password != confirm_password:
+            flash('Passwords do not match', 'danger')
+            return redirect(url_for('reset_password'))
+
+        user = User.query.filter_by(email=email).first()
+        if user:
+            hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256')
+            user.password = hashed_password
+            db.session.commit()
+
+            flash('Password reset successfully. Please login with your new password.', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('No account found with that email', 'danger')
+
+    return render_template('reset_password.html')
 
 
 if __name__ == '__main__':
